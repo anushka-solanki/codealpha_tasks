@@ -1,5 +1,0 @@
-theme=dark
-autoBackup=true
-loyaltyPointsRate=10
-gstRate=18.0
-currency=USD

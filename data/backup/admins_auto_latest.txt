@@ -1,2 +1,0 @@
-admin,admin123,System Administrator
-manager,manager123,Hotel Manager
