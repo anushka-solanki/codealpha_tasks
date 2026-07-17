@@ -1,0 +1,27 @@
+# Java
+*.class
+*.jar
+
+# Compiled Output
+bin/
+
+# IDE Files
+.idea/
+*.iml
+*.iws
+*.ipr
+.vscode/
+*.eclipse
+
+# OS Files
+.DS_Store
+Thumbs.db
+
+# Backup Files
+data/backup/
+
+# Reports (generated at runtime)
+reports/
+
+# Logs
+data/logs.txt

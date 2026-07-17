@@ -1,0 +1,2 @@
+john_doe,pass123,John Doe,john.doe@example.com,+1234567890,ID1001,173,101;102
+jane_smith,pass456,Jane Smith,jane.smith@example.com,+1987654321,ID1002,50,
