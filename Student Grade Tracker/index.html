@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="GradeStream - Premium Student Grade Management Admin Dashboard">
+    <title>GradeStream | Admin Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body class="theme-dark">
+
+<!-- Toast Container -->
+<div id="toast-container" class="toast-container"></div>
+
+<!-- Sidebar -->
+<aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+        <div class="sidebar-logo">
+            <div class="logo-icon-sm">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c0 2 2 3 6 3s6-1 6-3v-5"/></svg>
+            </div>
+            <span class="logo-text">GradeStream</span>
+        </div>
+        <button class="sidebar-toggle" id="sidebar-toggle" aria-label="Toggle Sidebar">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+        </button>
+    </div>
+
+    <nav class="sidebar-nav">
+        <a href="#" class="nav-item active" data-view="dashboard" title="Dashboard">
+            <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></span>
+            <span class="nav-label">Dashboard</span>
+        </a>
+        <a href="#" class="nav-item" data-view="students" title="Students">
+            <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span>
+            <span class="nav-label">Students</span>
+            <span class="nav-badge" id="student-count-badge">0</span>
+        </a>
+        <a href="#" class="nav-item" data-view="analytics" title="Analytics">
+            <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></span>
+            <span class="nav-label">Analytics</span>
+        </a>
+        <a href="#" class="nav-item" data-view="reports" title="Reports">
+            <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg></span>
+            <span class="nav-label">Reports</span>
+        </a>
+        <a href="#" class="nav-item" data-view="settings" title="Settings">
+            <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg></span>
+            <span class="nav-label">Settings</span>
+        </a>
+    </nav>
+
+    <div class="sidebar-footer">
+        <div class="admin-info">
+            <div class="admin-avatar">A</div>
+            <div class="admin-details">
+                <div class="admin-name">Administrator</div>
+                <div class="admin-role">Super Admin</div>
+            </div>
+        </div>
+        <button class="btn-logout" id="btn-logout" title="Logout">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        </button>
+    </div>
+</aside>
+
+<!-- Main Layout -->
+<div class="main-layout" id="main-layout">
+
+    <!-- Top Navigation Bar -->
+    <header class="topbar">
+        <div class="topbar-left">
+            <button class="topbar-menu-btn" id="topbar-menu-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+            </button>
+            <div class="topbar-search">
+                <svg class="search-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                <input type="text" id="topbar-search" placeholder="Search students by name, ID, grade...">
+                <div class="search-results" id="search-results"></div>
+            </div>
+        </div>
+        <div class="topbar-right">
+            <button class="icon-btn theme-toggle" id="theme-toggle" title="Toggle Theme">
+                <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+            </button>
+            <div class="notif-wrapper">
+                <button class="icon-btn notif-btn" id="notif-btn" title="Notifications">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                    <span class="notif-dot" id="notif-dot"></span>
+                </button>
+                <div class="notif-panel" id="notif-panel">
+                    <div class="notif-header"><span>Notifications</span><button id="clear-notifs">Clear all</button></div>
+                    <div class="notif-list" id="notif-list"><div class="notif-empty">No notifications yet</div></div>
+                </div>
+            </div>
+            <div class="profile-wrapper">
+                <button class="profile-btn" id="profile-btn">
+                    <div class="profile-avatar">A</div>
+                    <span class="profile-name">Admin</span>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14"><polyline points="6 9 12 15 18 9"/></svg>
+                </button>
+                <div class="profile-dropdown" id="profile-dropdown">
+                    <div class="profile-info-hd"><div class="profile-avatar-lg">A</div><div><div class="pname">Administrator</div><div class="pemail">admin@gradestream.edu</div></div></div>
+                    <hr>
+                    <a href="#" class="profile-item" data-view="settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg> Settings</a>
+                    <a href="#" class="profile-item" id="logout-dd"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg> Logout</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Views Container -->
+    <main class="views-container">
+
+        <!-- ===== DASHBOARD VIEW ===== -->
+        <div class="view active" id="view-dashboard">
+            <div class="view-header">
+                <div>
+                    <h2 class="view-title">Dashboard Overview</h2>
+                    <p class="view-sub" id="datetime-display">Loading...</p>
+                </div>
+                <div class="quick-actions">
+                    <button class="btn btn-primary" id="qa-add"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Add Student</button>
+                    <button class="btn btn-secondary" id="qa-report"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16"><path d="M14 2H6a2 2 0 0 0-2 2v16"/><polyline points="14 2 14 8 20 8"/></svg> Generate Report</button>
+                    <button class="btn btn-secondary" id="qa-export"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Export Data</button>
+                </div>
+            </div>
+
+            <!-- Stats Cards Grid -->
+            <div class="stats-grid" id="stats-grid">
+                <div class="stat-card animate-card" id="sc-total">
+                    <div class="sc-icon purple"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+                    <div class="sc-info"><div class="sc-label">Total Students</div><div class="sc-val" id="st-total">0</div></div>
+                    <div class="sc-trend up">↑ Active</div>
+                </div>
+                <div class="stat-card animate-card" id="sc-avg">
+                    <div class="sc-icon blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></div>
+                    <div class="sc-info"><div class="sc-label">Class Average</div><div class="sc-val" id="st-avg">N/A</div></div>
+                    <div class="sc-trend" id="avg-trend">Overall</div>
+                </div>
+                <div class="stat-card animate-card" id="sc-high">
+                    <div class="sc-icon green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></div>
+                    <div class="sc-info"><div class="sc-label">Highest Score</div><div class="sc-val" id="st-high">N/A</div></div>
+                    <div class="sc-trend" id="high-sub">—</div>
+                </div>
+                <div class="stat-card animate-card" id="sc-low">
+                    <div class="sc-icon red"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 18 13.5 8.5 8.5 13.5 1 6"/><polyline points="17 18 23 18 23 12"/></svg></div>
+                    <div class="sc-info"><div class="sc-label">Lowest Score</div><div class="sc-val" id="st-low">N/A</div></div>
+                    <div class="sc-trend" id="low-sub">—</div>
+                </div>
+                <div class="stat-card animate-card" id="sc-pass">
+                    <div class="sc-icon green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div>
+                    <div class="sc-info"><div class="sc-label">Pass Percentage</div><div class="sc-val" id="st-pass">N/A</div></div>
+                    <div class="sc-trend up">≥ 50% avg</div>
+                </div>
+                <div class="stat-card animate-card" id="sc-fail">
+                    <div class="sc-icon red"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div>
+                    <div class="sc-info"><div class="sc-label">Fail Percentage</div><div class="sc-val" id="st-fail">N/A</div></div>
+                    <div class="sc-trend down">Below 50% avg</div>
+                </div>
+                <div class="stat-card animate-card" id="sc-subj">
+                    <div class="sc-icon amber"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></div>
+                    <div class="sc-info"><div class="sc-label">Total Subjects</div><div class="sc-val">4</div></div>
+                    <div class="sc-trend">Math, Sci, Eng, His</div>
+                </div>
+                <div class="stat-card animate-card" id="sc-top">
+                    <div class="sc-icon gold"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2z"/></svg></div>
+                    <div class="sc-info"><div class="sc-label">Top Performer</div><div class="sc-val sc-small" id="st-top">N/A</div></div>
+                    <div class="sc-trend" id="top-score">—</div>
+                </div>
+            </div>
+
+            <div class="dashboard-lower">
+                <!-- Recent Activity -->
+                <div class="panel activity-panel">
+                    <div class="panel-head"><h3>Recent Activity</h3><span class="badge-count" id="activity-count">0</span></div>
+                    <div class="activity-list" id="activity-list">
+                        <div class="activity-empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="40"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg><p>No activity yet</p></div>
+                    </div>
+                </div>
+
+                <!-- Insights Summary -->
+                <div class="panel insights-summary-panel">
+                    <div class="panel-head"><h3>Performance Insights</h3></div>
+                    <div class="insights-list" id="dash-insights">
+                        <div class="insight-empty">Add students to generate insights.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== STUDENTS VIEW ===== -->
+        <div class="view" id="view-students">
+            <div class="view-header">
+                <div><h2 class="view-title">Student Directory</h2><p class="view-sub">Manage and track all student records</p></div>
+                <button class="btn btn-primary" id="btn-add-student-view">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Add Student
+                </button>
+            </div>
+
+            <!-- Table Controls -->
+            <div class="table-controls">
+                <div class="tc-left">
+                    <div class="search-field">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                        <input type="text" id="student-search" placeholder="Search students...">
+                    </div>
+                    <select class="filter-select" id="grade-filter">
+                        <option value="all">All Grades</option>
+                        <option value="A">Grade A (90-100)</option>
+                        <option value="B">Grade B (75-89)</option>
+                        <option value="C">Grade C (60-74)</option>
+                        <option value="D">Grade D (50-59)</option>
+                        <option value="F">Grade F (Below 50)</option>
+                    </select>
+                    <select class="filter-select" id="sort-select">
+                        <option value="name">Sort: Name</option>
+                        <option value="avg-desc">Sort: Avg (High)</option>
+                        <option value="avg-asc">Sort: Avg (Low)</option>
+                        <option value="id">Sort: ID</option>
+                    </select>
+                </div>
+                <div class="tc-right">
+                    <span class="record-info" id="record-info">Showing 0 records</span>
+                </div>
+            </div>
+
+            <!-- Table -->
+            <div class="table-wrapper">
+                <div class="loading-overlay" id="table-loading" style="display:none">
+                    <div class="spinner"></div>
+                </div>
+                <table class="data-table" id="students-table">
+                    <thead>
+                        <tr>
+                            <th data-sort="id" class="sortable">ID <span class="sort-arrow">↕</span></th>
+                            <th>Student</th>
+                            <th data-sort="math" class="sortable">Math <span class="sort-arrow">↕</span></th>
+                            <th data-sort="science" class="sortable">Science <span class="sort-arrow">↕</span></th>
+                            <th data-sort="english" class="sortable">English <span class="sort-arrow">↕</span></th>
+                            <th data-sort="history" class="sortable">History <span class="sort-arrow">↕</span></th>
+                            <th data-sort="avg" class="sortable">Average <span class="sort-arrow">↕</span></th>
+                            <th>Grade</th>
+                            <th>Status</th>
+                            <th style="text-align:center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="student-tbody"></tbody>
+                </table>
+                <div class="empty-state-table" id="empty-state-table" style="display:none">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" width="64" style="opacity:0.2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                    <p>No students found</p>
+                    <span>Try adjusting your search or filters</span>
+                </div>
+            </div>
+
+            <!-- Pagination -->
+            <div class="pagination" id="pagination"></div>
+        </div>
+
+        <!-- ===== ANALYTICS VIEW ===== -->
+        <div class="view" id="view-analytics">
+            <div class="view-header">
+                <div><h2 class="view-title">Analytics Center</h2><p class="view-sub">Visual performance breakdown and trends</p></div>
+            </div>
+            <div class="charts-grid">
+                <div class="panel chart-panel-lg"><h3 class="panel-title-sm">Subject-wise Class Average</h3><div class="chart-box"><canvas id="chart-subject-avg"></canvas></div></div>
+                <div class="panel chart-panel-sm"><h3 class="panel-title-sm">Grade Distribution</h3><div class="chart-box"><canvas id="chart-grade-dist"></canvas></div></div>
+                <div class="panel chart-panel-lg"><h3 class="panel-title-sm">Student Performance Trend</h3><div class="chart-box"><canvas id="chart-perf-trend"></canvas></div></div>
+                <div class="panel chart-panel-sm"><h3 class="panel-title-sm">Pass vs Fail</h3><div class="chart-box"><canvas id="chart-pass-fail"></canvas></div></div>
+                <div class="panel chart-panel-lg"><h3 class="panel-title-sm">Top 5 Students</h3><div class="chart-box"><canvas id="chart-top5"></canvas></div></div>
+                <div class="panel chart-panel-sm"><h3 class="panel-title-sm">Subject Comparison (Radar)</h3><div class="chart-box"><canvas id="chart-radar"></canvas></div></div>
+            </div>
+        </div>
+
+        <!-- ===== REPORTS VIEW ===== -->
+        <div class="view" id="view-reports">
+            <div class="view-header">
+                <div><h2 class="view-title">Reports & Export</h2><p class="view-sub">Generate and download comprehensive reports</p></div>
+            </div>
+            <div class="reports-grid">
+                <div class="report-card" id="rpt-csv">
+                    <div class="rpt-icon green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="28"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/></svg></div>
+                    <div class="rpt-info"><h4>Export CSV</h4><p>Download all student data as a spreadsheet file</p></div>
+                    <button class="btn btn-primary btn-sm" id="btn-export-csv-rpt">Export CSV</button>
+                </div>
+                <div class="report-card" id="rpt-pdf">
+                    <div class="rpt-icon red"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="28"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+                    <div class="rpt-info"><h4>Export PDF</h4><p>Generate a formatted PDF report of all grades</p></div>
+                    <button class="btn btn-danger btn-sm" id="btn-export-pdf">Export PDF</button>
+                </div>
+                <div class="report-card" id="rpt-print">
+                    <div class="rpt-icon blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="28"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg></div>
+                    <div class="rpt-info"><h4>Print Report</h4><p>Open printer-friendly report in a new window</p></div>
+                    <button class="btn btn-secondary btn-sm" id="btn-print">Print Report</button>
+                </div>
+                <div class="report-card" id="rpt-card">
+                    <div class="rpt-icon gold"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="28"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>
+                    <div class="rpt-info"><h4>Student Report Cards</h4><p>Generate individual report cards for each student</p></div>
+                    <button class="btn btn-amber btn-sm" id="btn-report-cards">Generate Cards</button>
+                </div>
+            </div>
+
+            <!-- Report Preview -->
+            <div class="panel report-preview-panel">
+                <div class="panel-head"><h3>Summary Report Preview</h3><button class="btn btn-sm btn-secondary" id="refresh-preview">Refresh</button></div>
+                <div id="report-preview-content" class="report-preview-content"></div>
+            </div>
+        </div>
+
+        <!-- ===== SETTINGS VIEW ===== -->
+        <div class="view" id="view-settings">
+            <div class="view-header">
+                <div><h2 class="view-title">Settings</h2><p class="view-sub">Customize your dashboard experience</p></div>
+            </div>
+            <div class="settings-grid">
+                <div class="panel settings-panel">
+                    <h3 class="settings-section-title">Appearance</h3>
+                    <div class="setting-item">
+                        <div><div class="setting-label">Theme</div><div class="setting-desc">Switch between dark and light mode</div></div>
+                        <select class="filter-select" id="theme-setting">
+                            <option value="theme-dark">Dark Mode</option>
+                            <option value="theme-light">Light Mode</option>
+                            <option value="theme-midnight">Midnight Blue</option>
+                        </select>
+                    </div>
+                    <div class="setting-item">
+                        <div><div class="setting-label">Sidebar</div><div class="setting-desc">Default sidebar state</div></div>
+                        <select class="filter-select" id="sidebar-setting">
+                            <option value="expanded">Expanded</option>
+                            <option value="collapsed">Collapsed</option>
+                        </select>
+                    </div>
+                    <h3 class="settings-section-title" style="margin-top:1.5rem">Data Management</h3>
+                    <div class="setting-item">
+                        <div><div class="setting-label">Reset Demo Data</div><div class="setting-desc">Restore all sample student records</div></div>
+                        <button class="btn btn-sm btn-secondary" id="btn-reset-demo">Reset</button>
+                    </div>
+                    <div class="setting-item">
+                        <div><div class="setting-label danger-txt">Clear All Data</div><div class="setting-desc">Permanently delete all student records</div></div>
+                        <button class="btn btn-sm btn-danger" id="btn-clear-all">Clear All</button>
+                    </div>
+                    <h3 class="settings-section-title" style="margin-top:1.5rem">Grade Thresholds</h3>
+                    <div class="grade-legend">
+                        <div class="gl-item"><span class="grade-badge A">A</span> 90 – 100 (Excellent)</div>
+                        <div class="gl-item"><span class="grade-badge B">B</span> 75 – 89 (Good)</div>
+                        <div class="gl-item"><span class="grade-badge C">C</span> 60 – 74 (Average)</div>
+                        <div class="gl-item"><span class="grade-badge D">D</span> 50 – 59 (Below Average)</div>
+                        <div class="gl-item"><span class="grade-badge F">F</span> Below 50 (Failing)</div>
+                    </div>
+                </div>
+                <div class="panel settings-panel">
+                    <h3 class="settings-section-title">About GradeStream</h3>
+                    <div class="about-card">
+                        <div class="about-logo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="40"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c0 2 2 3 6 3s6-1 6-3v-5"/></svg></div>
+                        <h2>GradeStream Admin</h2>
+                        <p class="version">Version 2.0 Premium</p>
+                        <p class="about-desc">A comprehensive student grade management and analytics platform built with HTML5, CSS3, and JavaScript. Implements Java OOP design principles (Student class, StudentManager class, arrays and ArrayLists) in JavaScript for full CRUD operations.</p>
+                        <div class="about-stats">
+                            <div><span>4</span> Subjects</div>
+                            <div><span>6</span> Charts</div>
+                            <div><span>4</span> Reports</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="app-footer-bar">
+        <span>© 2026 <strong>GradeStream</strong> — Premium Grade Management Platform</span>
+        <span>Built with HTML5 · CSS3 · JavaScript · Chart.js | Java OOP Architecture</span>
+    </footer>
+</div>
+
+<!-- ===== ADD/EDIT STUDENT MODAL ===== -->
+<div class="modal-overlay" id="modal-add-edit" style="display:none">
+    <div class="modal">
+        <div class="modal-header">
+            <h3 id="modal-title">Add New Student</h3>
+            <button class="modal-close" id="modal-close-add">✕</button>
+        </div>
+        <div class="modal-body">
+            <input type="hidden" id="edit-student-id">
+            <div class="modal-grid">
+                <div class="form-field">
+                    <label>Full Name *</label>
+                    <input type="text" id="f-name" placeholder="e.g. Alex Johnson" autocomplete="off">
+                    <span class="field-err" id="f-name-err"></span>
+                </div>
+                <div class="form-field">
+                    <label>Teacher Remarks</label>
+                    <input type="text" id="f-remarks" placeholder="Optional remarks...">
+                </div>
+                <div class="form-field">
+                    <label>Mathematics (0–100) *</label>
+                    <input type="number" id="f-math" min="0" max="100" placeholder="0-100">
+                    <span class="field-err" id="f-math-err"></span>
+                </div>
+                <div class="form-field">
+                    <label>Science (0–100) *</label>
+                    <input type="number" id="f-science" min="0" max="100" placeholder="0-100">
+                    <span class="field-err" id="f-science-err"></span>
+                </div>
+                <div class="form-field">
+                    <label>English (0–100) *</label>
+                    <input type="number" id="f-english" min="0" max="100" placeholder="0-100">
+                    <span class="field-err" id="f-english-err"></span>
+                </div>
+                <div class="form-field">
+                    <label>History (0–100) *</label>
+                    <input type="number" id="f-history" min="0" max="100" placeholder="0-100">
+                    <span class="field-err" id="f-history-err"></span>
+                </div>
+            </div>
+            <div class="live-preview" id="live-preview" style="display:none">
+                <div class="lp-avg">Preview Average: <strong id="lp-avg-val">—</strong></div>
+                <div class="lp-grade">Grade: <strong id="lp-grade-val">—</strong></div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" id="modal-cancel-add">Cancel</button>
+            <button class="btn btn-primary" id="modal-save-student">Save Student</button>
+        </div>
+    </div>
+</div>
+
+<!-- ===== DELETE CONFIRMATION MODAL ===== -->
+<div class="modal-overlay" id="modal-confirm-delete" style="display:none">
+    <div class="modal modal-sm">
+        <div class="modal-header danger-hd">
+            <h3>Confirm Deletion</h3>
+            <button class="modal-close" id="modal-close-del">✕</button>
+        </div>
+        <div class="modal-body" style="text-align:center;padding:2rem">
+            <div class="del-icon">🗑️</div>
+            <p style="margin:1rem 0;color:var(--text-muted)">Are you sure you want to delete <strong id="del-student-name" style="color:var(--text-main)"></strong>? This action cannot be undone.</p>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" id="del-cancel">Cancel</button>
+            <button class="btn btn-danger" id="del-confirm">Delete Student</button>
+        </div>
+    </div>
+</div>
+
+<!-- ===== STUDENT DETAILS MODAL ===== -->
+<div class="modal-overlay" id="modal-details" style="display:none">
+    <div class="modal modal-lg">
+        <div class="modal-header">
+            <h3>Student Profile</h3>
+            <button class="modal-close" id="modal-close-details">✕</button>
+        </div>
+        <div class="modal-body" id="detail-modal-body">
+            <!-- Populated by JS -->
+        </div>
+    </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>

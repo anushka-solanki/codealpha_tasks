@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GradeStream | Admin Login</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: #020617;
+            background-image: radial-gradient(ellipse at 20% 20%, #1e1b4b 0%, transparent 50%),
+                              radial-gradient(ellipse at 80% 80%, #0c1a2e 0%, transparent 50%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        .particles { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+        .particle {
+            position: absolute;
+            width: 2px; height: 2px;
+            background: rgba(99,102,241,0.5);
+            border-radius: 50%;
+            animation: float linear infinite;
+        }
+        @keyframes float {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-100px) rotate(720deg); opacity: 0; }
+        }
+        .login-card {
+            position: relative; z-index: 1;
+            background: rgba(17,24,39,0.7);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(99,102,241,0.2);
+            border-radius: 24px;
+            padding: 3rem 2.5rem;
+            width: 420px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.05) inset;
+            animation: slideUp 0.6s cubic-bezier(0.4,0,0.2,1);
+        }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .logo { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 2rem; }
+        .logo-icon {
+            width: 48px; height: 48px;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 8px 24px rgba(99,102,241,0.4);
+        }
+        .logo-icon svg { width: 26px; height: 26px; color: white; }
+        .logo h1 { font-size: 1.5rem; font-weight: 800; color: white; }
+        .logo span { color: #818cf8; }
+        .welcome { margin-bottom: 2rem; }
+        .welcome h2 { font-size: 1.6rem; font-weight: 700; color: #f1f5f9; margin-bottom: 0.4rem; }
+        .welcome p { font-size: 0.9rem; color: #64748b; }
+        .demo-badge {
+            background: rgba(99,102,241,0.12);
+            border: 1px solid rgba(99,102,241,0.25);
+            border-radius: 10px;
+            padding: 0.75rem 1rem;
+            margin-bottom: 1.5rem;
+            font-size: 0.82rem;
+            color: #a5b4fc;
+        }
+        .demo-badge strong { color: #818cf8; }
+        .field { margin-bottom: 1.25rem; }
+        .field label { display: block; font-size: 0.82rem; font-weight: 600; color: #94a3b8; margin-bottom: 0.5rem; letter-spacing: 0.05em; text-transform: uppercase; }
+        .field input {
+            width: 100%;
+            background: rgba(15,23,42,0.6);
+            border: 1px solid rgba(99,102,241,0.2);
+            border-radius: 12px;
+            padding: 0.875rem 1rem;
+            color: #f1f5f9;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.95rem;
+            transition: all 0.25s;
+        }
+        .field input:focus { outline: none; border-color: #6366f1; background: rgba(15,23,42,0.8); box-shadow: 0 0 0 3px rgba(99,102,241,0.2); }
+        .field input::placeholder { color: #475569; }
+        .btn-login {
+            width: 100%;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            border: none;
+            border-radius: 12px;
+            padding: 0.95rem;
+            color: white;
+            font-family: 'Outfit', sans-serif;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.25s;
+            box-shadow: 0 8px 24px rgba(99,102,241,0.4);
+            margin-top: 0.5rem;
+        }
+        .btn-login:hover { opacity: 0.9; transform: translateY(-1px); box-shadow: 0 12px 32px rgba(99,102,241,0.5); }
+        .btn-login:active { transform: translateY(0); }
+        .err { color: #f87171; font-size: 0.82rem; margin-top: 0.75rem; text-align: center; display: none; }
+        .footer-text { text-align: center; margin-top: 1.5rem; font-size: 0.78rem; color: #334155; }
+    </style>
+</head>
+<body>
+<div class="particles" id="particles"></div>
+<div class="login-card">
+    <div class="logo">
+        <div class="logo-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+                <path d="M6 12v5c0 2 2 3 6 3s6-1 6-3v-5"/>
+            </svg>
+        </div>
+        <h1>Grade<span>Stream</span></h1>
+    </div>
+    <div class="welcome">
+        <h2>Welcome back 👋</h2>
+        <p>Sign in to access your grade management dashboard</p>
+    </div>
+    <div class="demo-badge">
+        🔑 Demo credentials — Username: <strong>admin</strong> &nbsp;|&nbsp; Password: <strong>admin123</strong>
+    </div>
+    <form id="login-form">
+        <div class="field">
+            <label>Username</label>
+            <input type="text" id="username" placeholder="Enter username" autocomplete="off">
+        </div>
+        <div class="field">
+            <label>Password</label>
+            <input type="password" id="password" placeholder="Enter password">
+        </div>
+        <button type="submit" class="btn-login">Sign In to Dashboard →</button>
+        <div class="err" id="err-msg">Invalid credentials. Try admin / admin123</div>
+    </form>
+    <div class="footer-text">GradeStream Admin Panel • Educational Analytics Platform</div>
+</div>
+<script>
+    // Particles
+    const pc = document.getElementById('particles');
+    for (let i = 0; i < 40; i++) {
+        const p = document.createElement('div');
+        p.className = 'particle';
+        p.style.cssText = `left:${Math.random()*100}%;width:${Math.random()*3+1}px;height:${Math.random()*3+1}px;animation-duration:${Math.random()*15+8}s;animation-delay:${Math.random()*10}s;opacity:${Math.random()*0.5+0.2}`;
+        pc.appendChild(p);
+    }
+    document.getElementById('login-form').addEventListener('submit', e => {
+        e.preventDefault();
+        const u = document.getElementById('username').value.trim();
+        const p = document.getElementById('password').value;
+        if (u === 'admin' && p === 'admin123') {
+            sessionStorage.setItem('gs_auth', '1');
+            window.location.href = 'index.html';
+        } else {
+            document.getElementById('err-msg').style.display = 'block';
+        }
+    });
+</script>
+</body>
+</html>
